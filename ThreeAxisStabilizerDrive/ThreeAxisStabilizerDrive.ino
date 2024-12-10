@@ -8,17 +8,20 @@ void calibrate-to-zero (int64_t time);//using to calibrate gyro to zero
 //variable or name for servo and senser 
 MPU6050 mpu;//name MPU6050 mpu
 Servo Xservo;//name X axis servo Xservo
-int16_t servopin=3;//the servo pin in Arduino
+Servo Yservo;//name Y axis servo Xservo
+Servo ZServo;//name Z axis servo Xservo
+int16_t servopin[3]={3,5,6};//the servo pin in Arduino,definition is x,y,z
 
 //variable for input and calculation angle
-int16_t xInput;//Receive x axis rotation information
+//the definition of the Array is {x,y,z}
+int16_t Input[3]=0;//Receive x axis rotation information
 double CalibrationValue;//Recording error value using to correct calibration
-double RotationAnglePerSecond;//xInput translate to 0~+/-2000 degrees/sec
-double RotationAngle;//RotationAnglePerSecond calculate to 0~180 degrees
-int32_t totalAngle=90000000;//Recevie sum angle 
-int32_t totalTime;//Receive how many time(microsecond) in some loop
+double RotationAnglePerSecond[3]=0;//xInput translate to 0~+/-2000 degrees/sec
+double RotationAngle[3]=0;//RotationAnglePerSecond calculate to 0~180 degrees
+int32_t totalAngle=90*1000000;//Recevie sum angle 
 
 //variable for time 
+int32_t totalTime;//Receive how many time(microsecond) in some loop
 uint64_t timepoint=0;//the time that the loop was implemented
 uint64_t timepointBefore=0;//the time that the loop was finish
 uint64_t deltaTime;//Difference between timepoint and timepointBefore
@@ -36,16 +39,18 @@ void setup() {
 void loop() {
   timepoint=micros();//log the time that the loop start
   
-  if(totalTime>=detecttime>0){
-    int32_t rotationangle=totalAngle/(1000000);
+  if(totalTime>=detecttime){
+    int32_t rotationangle=totalAngle/1000000;
     totalTime=0;
   }
 
   //calculate Rotation angle
-  xInput=mpu.getRotationZ();//input the angular velocity
-  RotationAnglePerSecond=map(xInput,-32767,32767,-2000,2000);//transform the angular velocity from +/-32767 to +/-2000
-  Serial.print(xInput);Serial.println("\t");
-  RotationAngle=RotationAnglePerSecond*deltaTime;//integral RotationAnglePerSecond (transform to RotationAngle from RotationAnglePerSecond)
+  mpu.getRotation(&Input[0],Input[1],Input[2]);//input the angular velocity
+  for(int i=0;i<3;i++){
+    RotationAnglePerSecond[i]=map(Input[i],-32767,32767,-2000,2000);//transform the angular velocity from +/-32767 to +/-2000
+    Serial.print(xInput);Serial.println("\t");
+    RotationAngle[i]=RotationAnglePerSecond[i]*deltaTime;//integral RotationAnglePerSecond (transform to RotationAngle from RotationAnglePerSecond)
+  }
   
   //calculate using time and log time point
   totalAngle+=RotationAngle;//Add up RotationAngle to totalAngle
@@ -60,8 +65,8 @@ void calibrate-to-zero (int64_t time){//time is using to limit inplement time of
   mpu.setYGyroOffset(0);
   mpu.setZGyroOffset(0);
 
-  //array about output calculation
-  int16_t GyroOutput[3]={};//save input information from MPU6050{x,y,z}
+  //array about output calculation,definition={x,y,z}
+  int16_t GyroOutput[3]={};//save input information from MPU6050
   int32_t OutputTotal[3]={};//calculate the sum of GyroOutput
   int16_t OutputAverage[3]={};//calculate the average of GyroOutput in some time
   
@@ -69,6 +74,7 @@ void calibrate-to-zero (int64_t time){//time is using to limit inplement time of
   int64_t origin=micros();//memer the origintime
   int32_t times=0;//log the lap of the loop
 
+  //find the average of output of mpu6050
   while(1){
     times++;
     mpu.getRotation(&GyroOutput[0],&GyroOutput[1],&GyroOutput[2]);//get input of mpu6050
