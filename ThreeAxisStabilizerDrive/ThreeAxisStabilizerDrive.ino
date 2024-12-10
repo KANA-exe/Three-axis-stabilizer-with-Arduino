@@ -41,10 +41,13 @@ void loop() {
     totalTime=0;
   }
 
+  //calculate Rotation angle
   xInput=mpu.getRotationZ();//input the angular velocity
   RotationAnglePerSecond=map(xInput,-32767,32767,-2000,2000);//transform the angular velocity from +/-32767 to +/-2000
   Serial.print(xInput);Serial.println("\t");
   RotationAngle=RotationAnglePerSecond*deltaTime;//integral RotationAnglePerSecond (transform to RotationAngle from RotationAnglePerSecond)
+  
+  //calculate using time and log time point
   totalAngle+=RotationAngle;//Add up RotationAngle to totalAngle
   deltaTime=timepoint-timepointBefore;//calculate deltatime in this loop
   totalTime+=deltaTime;//Add up deltaTime to totalTime
