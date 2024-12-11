@@ -32,9 +32,8 @@ void setup() {
   mpu.initialize();
   mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);//set gyro detect range to 500 degrees/sec from 2000 degrees/sec
   //mpu.setZGyroOffset(29);//the function use for calibratiom(value:x=114,y=-77,z=3)
-  calibrate-to-zero(10000);
+  calibrate-to-zero(10000);//calibrate mpu6050
 
-  
   //set Servo pin address
   Xservo.attach(servopin[0]);
   Yservo.attach(servopin[1]);
