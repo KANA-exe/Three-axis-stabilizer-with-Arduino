@@ -10,7 +10,7 @@
     - it is best to prepare a Arduino shield.  
   - Assemble the circuit.  
     - 
-  - Download the .zip of this program and extract it.
+  - Download the [.zip](https://github.com/KANA-exe/Three-axis-stabilizer-with-Arduino/archive/refs/heads/main.zip) of this program and extract it.
   - Connect the Arduino board and the computer.
   - Check the Port of the Arduino board.  
     Steps in Windows11 as following:  
@@ -19,7 +19,7 @@
     - Find "Ports (COM & LPT)" and double clict it.  
     - Find port of arduino board,and it may display "Arduno XXXX CH340 (COM?) ".  
     - log port of Arduino board in paper or other space. (it is "com?","?" is a number).
-  - Install and open Arduino IDE.(About that you can see Arduino's website)  
+  - Install and open [Arduino IDE](https://www.arduino.cc/en/software).(About that you can see Arduino's website)  
   - Open "Three-axis-stabilizer-with-Arduino">"ThreeAxisStabilizerDrive">"ThreeAxisStabilizerDrive.ino".  
   - Click "Tools">"Board">"Arduino AVR Boards",then find your board's type and click it. 
   - Click "Tools">"Port",and choice the board's port.
