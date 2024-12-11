@@ -10,7 +10,7 @@
     - it is best to prepare a Arduino shield.  
   2. Assemble the circuit.  
   - it is the circrit diagram as follow
-    ![circuit diagram](https://github.com/KANA-exe/Three-axis-stabilizer-with-Arduino/blob/main/Screenshot%202024-12-12%20054618.png?raw=true)
+    ![circuit diagram](https://github.com/KANA-exe/Three-axis-stabilizer-with-Arduino/blob/main/circuit%20diagram.png?raw=true)
   3. Download the [.zip](https://github.com/KANA-exe/Three-axis-stabilizer-with-Arduino/archive/refs/heads/main.zip) of this program and extract it.
   4. Connect the Arduino board and the computer.
   5. Check the Port of the Arduino board.  
