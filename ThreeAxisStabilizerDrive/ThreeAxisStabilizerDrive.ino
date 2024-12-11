@@ -8,8 +8,8 @@ void calibrate-to-zero (int64_t time);//using to calibrate gyro to zero
 //variable or name for servo and senser 
 MPU6050 mpu;//name MPU6050 mpu
 Servo Xservo;//name X axis servo Xservo
-Servo Yservo;//name Y axis servo Xservo
-Servo ZServo;//name Z axis servo Xservo
+Servo Yservo;//name Y axis servo Yservo
+Servo ZServo;//name Z axis servo Zservo
 int16_t servopin[3]={3,5,6};//the servo pin in Arduino,definition is x,y,z
 
 //variable for input and calculation angle
@@ -18,7 +18,7 @@ int16_t Input[3]=0;//Receive x axis rotation information
 double CalibrationValue;//Recording error value using to correct calibration
 double RotationAnglePerSecond[3]=0;//xInput translate to 0~+/-2000 degrees/sec
 double RotationAngle[3]=0;//RotationAnglePerSecond calculate to 0~180 degrees
-int32_t totalAngle=90*1000000;//Recevie sum angle 
+int32_t totalAngle[3];//Recevie sum angle 
 
 //variable for time 
 int32_t totalTime;//Receive how many time(microsecond) in some loop
@@ -31,9 +31,19 @@ void setup() {
   Serial.begin(38400);//set baud of Serial Moniter
   mpu.initialize();
   mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);//set gyro detect range to 500 degrees/sec from 2000 degrees/sec
-  mpu.setZGyroOffset(29);//the function use for calibratiom(value:x=114,y=-77,z=3)
-  Xservo.attach(servopin);//set Servo pin address
-  Xservo.write(90);//initailize the servo pointing to angle to 90 degrees
+  //mpu.setZGyroOffset(29);//the function use for calibratiom(value:x=114,y=-77,z=3)
+  calibrate-to-zero(10000);
+
+  
+  //set Servo pin address
+  Xservo.attach(servopin[0]);
+  Yservo.attach(servopin[1]);
+  Zservo.attach(servopin[2]);
+  
+  //initailize the servo pointing to angle to 90 degrees
+  Xservo.write(90);
+  Yservo.write(90);
+  Zservo.write(90);
 }
 
 void loop() {
@@ -59,8 +69,8 @@ void loop() {
   timepointBefore=timepoint;//memery the timepoint in this loop
 }
 
-void calibrate-to-zero (int64_t time){//time is using to limit inplement time of loop in this function 
-  //set all offset to zero
+void calibrate-to-zero (int64_t time){//time is using to limit inplement time of loop in this function,its unit is microsecond
+  //set all offset zero
   mpu.setXGyroOffset(0);
   mpu.setYGyroOffset(0);
   mpu.setZGyroOffset(0);
@@ -85,7 +95,7 @@ void calibrate-to-zero (int64_t time){//time is using to limit inplement time of
 
     int64_t time=micros();//get the time point of the loop that was been implement finish
     
-    if(time-origin>=time){//condition of to break the while loop
+    if((time-origin)>=time){//condition of to break the while loop
       break;
     }
   }
