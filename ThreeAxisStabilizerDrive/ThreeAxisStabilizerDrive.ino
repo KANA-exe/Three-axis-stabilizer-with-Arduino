@@ -19,6 +19,7 @@ double CalibrationValue;//Recording error value using to correct calibration
 double RotationAnglePerSecond[3]=0;//xInput translate to 0~+/-2000 degrees/sec
 double RotationAngle[3]=0;//RotationAnglePerSecond calculate to 0~180 degrees
 int32_t totalAngle[3];//Recevie sum angle 
+int32_t rotate[3]=0;//the rotation signal of servo moter
 
 //variable for time 
 int32_t totalTime;//Receive how many time(microsecond) in some loop
@@ -49,7 +50,12 @@ void loop() {
   timepoint=micros();//log the time that the loop start
   
   if(totalTime>=detecttime){
-    int32_t rotationangle=totalAngle/1000000;
+    for(int i=0;i<3;i++){
+      rotate[i]=totalAngle[i]/1000000;
+    }
+    Xservo.write(rotate[0]);
+    Yservo.write(rotate[1]);
+    Zservo.write(rotate[2]);
     totalTime=0;
   }
 
@@ -59,10 +65,10 @@ void loop() {
     RotationAnglePerSecond[i]=map(Input[i],-32767,32767,-2000,2000);//transform the angular velocity from +/-32767 to +/-2000
     Serial.print(xInput);Serial.println("\t");
     RotationAngle[i]=RotationAnglePerSecond[i]*deltaTime;//integral RotationAnglePerSecond (transform to RotationAngle from RotationAnglePerSecond)
+    totalAngle[i]+=RotationAngle[i];//Add up RotationAngle to totalAngle
   }
   
   //calculate using time and log time point
-  totalAngle+=RotationAngle;//Add up RotationAngle to totalAngle
   deltaTime=timepoint-timepointBefore;//calculate deltatime in this loop
   totalTime+=deltaTime;//Add up deltaTime to totalTime
   timepointBefore=timepoint;//memery the timepoint in this loop
