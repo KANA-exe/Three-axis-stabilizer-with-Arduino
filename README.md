@@ -18,7 +18,7 @@
     - It is the circrit diagram as follow.(the board is Arduino NANO)
     ![circuit diagram](https://github.com/KANA-exe/Three-axis-stabilizer-with-Arduino/blob/main/circuit%20diagram.png?raw=true)
   3. Download the [.zip](https://github.com/KANA-exe/Three-axis-stabilizer-with-Arduino/archive/refs/heads/main.zip) of this program and extract it.
-  4. Connect the Arduino board and the computer.
+  4. Connect the Arduino board to the computer.
   5. Check the Port of the Arduino board.  
     Steps in Windows11 as following:  
     - Click Windows+R on keyboard.  
