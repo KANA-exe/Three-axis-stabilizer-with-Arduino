@@ -31,7 +31,7 @@ int64_t detecttime=10000;//when totaltime large than that,the microcontroller wi
 void setup() {
   Serial.begin(38400);//set baud of Serial Moniter
   mpu.initialize();
-  mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);//set gyro detect range to 500 degrees/sec from 2000 degrees/sec
+  mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);//set gyro detect range to 2000 degrees/sec from 20 degrees/sec
   //mpu.setZGyroOffset(29);//the function use for calibratiom(value:x=114,y=-77,z=3)
   calibrate-to-zero(10000);//calibrate mpu6050
 
