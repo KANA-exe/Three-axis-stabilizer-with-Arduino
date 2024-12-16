@@ -51,12 +51,14 @@ void loop() {
   
   if(totalTime>=detecttime){
     for(int i=0;i<3;i++){
-      rotate[i]=totalAngle[i]/1000000;
+      rotate[i]=totalAngle[i]/1000000;//translate unit to second from micro second 
     }
+    
+    //write the angle
     Xservo.write(rotate[0]);
     Yservo.write(rotate[1]);
     Zservo.write(rotate[2]);
-    totalTime=0;
+    totalTime=0;//return to zero
   }
 
   //calculate Rotation angle
