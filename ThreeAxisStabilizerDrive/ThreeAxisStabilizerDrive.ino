@@ -100,9 +100,9 @@ void calibrate-to-zero (int64_t time){//time is using to limit inplement time of
       OutputAverage[i]=OutputTotal[i]/times;//calculate the average of GyroOutput in some time
     }
 
-    int64_t time=micros();//get the time point of the loop that was been implement finish
+    int64_t timepoint=micros();//get the time point of the loop that was been implement finish
     
-    if((time-origin)>=time){//condition of to break the while loop
+    if((timepoint-origin)>=time){//condition of to break the while loop
       break;
     }
   }
