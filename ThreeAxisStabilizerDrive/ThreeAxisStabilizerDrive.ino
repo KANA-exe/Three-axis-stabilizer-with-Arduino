@@ -95,10 +95,7 @@ void calibratetozero (int32_t outputpin){//time is using to limit inplement time
     for(int i=0;i<3;i++){//calculate the output average
       OutputTotal[i]+=GyroOutput[i];//calculate the sum of GyroOutput
       OutputAverage[i]=OutputTotal[i]/(t+1);//calculate the average of GyroOutput in some time
-      Serial.print(OutputAverage[i]);Serial.print("\t");
-      Serial.print(GyroOutput[i]);Serial.print("\t");
     }
-    Serial.print(t+1);Serial.println("\t");
   }
 
   //set new offset
