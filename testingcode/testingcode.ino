@@ -3,39 +3,29 @@
 
 MPU6050 mpu;
 
-int16_t GyroOutput[3]={};
-int32_t OutputTotal[3]={};
-int16_t OutputAverage[3]={};
-int32_t times=1;
 
-void calibrate-to-zero (int64_t time){//time is using to limit inplement time of loop in this function 
-  //set all offset to zero
+
+void calibratetozero (){//time is using to limit inplement time of loop in this function,its unit is microsecond
+  //set all offset zero
   mpu.setXGyroOffset(0);
   mpu.setYGyroOffset(0);
   mpu.setZGyroOffset(0);
 
-  //array about output calculation
-  int16_t GyroOutput[3]={};//save input information from MPU6050{x,y,z}
+  //array about output calculation,definition={x,y,z}
+  int16_t GyroOutput[3]={};//save input information from MPU6050
   int32_t OutputTotal[3]={};//calculate the sum of GyroOutput
-  int16_t OutputAverage[3]={};//calculate the average of GyroOutput in some time
-  
-  //value about time and lap of loop
-  int64_t origin=micros();//memer the origintime
-  int32_t times=0;//log the lap of the loop
+  int16_t OutputAverage[3]={};//calculate the average of GyroOutput in some 
 
-  while(1){
-    times++;
+  //find the average of output 
+  for(int t=0;t<75;t++){
     mpu.getRotation(&GyroOutput[0],&GyroOutput[1],&GyroOutput[2]);//get input of mpu6050
     for(int i=0;i<3;i++){//calculate the output average
       OutputTotal[i]+=GyroOutput[i];//calculate the sum of GyroOutput
-      OutputAverage[i]=OutputTotal[i]/times;//calculate the average of GyroOutput in some time
+      OutputAverage[i]=OutputTotal[i]/(t+1);//calculate the average of GyroOutput in some time
+      Serial.print(OutputAverage[i]);Serial.print("\t");
+      Serial.print(GyroOutput[i]);Serial.print("\t");
     }
-
-    int64_t time=micros();//get the time point of the loop that was been implement finish
-    
-    if(time-origin>=time){
-      break;
-    }
+    Serial.print(t+1);Serial.println("\t");
   }
 
   //set new offset
@@ -43,6 +33,11 @@ void calibrate-to-zero (int64_t time){//time is using to limit inplement time of
   mpu.setYGyroOffset(-2*OutputAverage[1]);
   mpu.setZGyroOffset(-2*OutputAverage[2]);
 }
+
+  int16_t GyroOutput[3]={};
+  int32_t OutputTotal[3]={};
+  int16_t OutputAverage[3]={};
+  int32_t times=1;
 
 void setup() {
   Serial.begin(9600);
@@ -55,7 +50,7 @@ void setup() {
   mpu.setXGyroOffset(0);
   mpu.setYGyroOffset(0);
   mpu.setZGyroOffset(0);
-  zero();
+  calibratetozero();
 }
 
 void loop() {
@@ -76,11 +71,11 @@ int32_t integral_dt(int32_t* fx){
 
 }
 
-int32_t PIDcontrol(int32_t fx,int32_t x,int32_t* total){//warning:the x need infinitely near 0,which is the using restriction
+int32_t PIDcontrol(int32_t fx,int32_t x,int32_t total){//warning:the x need infinitely near 0,which is the using restriction
   //constant
   int32_t kp=0;//it using to control the proportion of proportion part
   int32_t ki=0;//it using to control the proportion of intergal part
-  int32_t kp=0;//it using to control the proportion of differential part
+  int32_t kd=0;//it using to control the proportion of differential part
 
   //proportion
   int32_t p=kp*fx;
@@ -90,7 +85,7 @@ int32_t PIDcontrol(int32_t fx,int32_t x,int32_t* total){//warning:the x need inf
   int32_t i=ki*total;
 
   //differential
-  int32_t d=kp*(fx/x);
+  int32_t d=kd*(fx/x);
 
   return(p+i+d);
 }

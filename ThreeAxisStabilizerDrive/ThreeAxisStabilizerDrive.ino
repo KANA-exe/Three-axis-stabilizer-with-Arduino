@@ -4,22 +4,23 @@
 
 //the customize function list
 void calibratetozero ();//using to calibrate gyro to zero
+int32_t PIDcontrol(int32_t fx,int32_t x,int32_t total);
 
 //variable or name for servo and senser 
 MPU6050 mpu;//name MPU6050 mpu
 Servo Xservo;//name X axis servo Xservo
 Servo Yservo;//name Y axis servo Yservo
-Servo ZServo;//name Z axis servo Zservo
+Servo Zservo;//name Z axis servo Zservo
 int16_t servopin[3]={3,5,6};//the servo pin in Arduino,definition is x,y,z
 
 //variable for input and calculation angle
 //the definition of the Array is {x,y,z}
-int16_t Input[3]=0;//Receive x axis rotation information
+int16_t Input[3]={};//Receive x axis rotation information
 double CalibrationValue;//Recording error value using to correct calibration
-double RotationAnglePerSecond[3]=0;//xInput translate to 0~+/-2000 degrees/sec
-double RotationAngle[3]=0;//RotationAnglePerSecond calculate to 0~180 degrees
-int32_t totalAngle[3];//Recevie sum angle 
-int32_t rotate[3]=0;//the rotation signal of servo moter
+double RotationAnglePerSecond[3]={};//xInput translate to 0~+/-2000 degrees/sec
+double RotationAngle[3]={};//RotationAnglePerSecond calculate to 0~180 degrees
+int64_t totalAngle[3]={};//Recevie sum angle 
+int32_t rotate[3]={};//the rotation signal of servo moter
 
 //variable for time 
 int32_t totalTime;//Receive how many time(microsecond) in some loop
@@ -29,7 +30,7 @@ uint64_t deltaTime;//Difference between timepoint and timepointBefore
 int64_t detecttime=10000;//when totaltime large than that,the microcontroller will calculate the angle that the servo need
 
 void setup() {
-  Serial.begin(38400);//set baud of Serial Moniter
+  Serial.begin(9600);//set baud of Serial Moniter
   mpu.initialize();
   mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);//set gyro detect range to 2000 degrees/sec from 20 degrees/sec
   //mpu.setZGyroOffset(29);//the function use for calibratiom(value:x=114,y=-77,z=3)
@@ -51,7 +52,8 @@ void loop() {
   
   if(totalTime>=detecttime){
     for(int i=0;i<3;i++){
-      rotate[i]=totalAngle[i]/1000000;//translate unit to second from micro second 
+      rotate[i]=90+totalAngle[i]/1000000;//translate unit to second from micro second 
+      rotate[i]=PIDcontrol(rotate[i],deltaTime,totalAngle[i]/1000000);
     }
     
     //write the angle
@@ -62,10 +64,9 @@ void loop() {
   }
 
   //calculate Rotation angle
-  mpu.getRotation(&Input[0],Input[1],Input[2]);//input the angular velocity
+  mpu.getRotation(&Input[0],&Input[1],&Input[2]);//input the angular velocity
   for(int i=0;i<3;i++){
     RotationAnglePerSecond[i]=map(Input[i],-32767,32767,-2000,2000);//transform the angular velocity from +/-32767 to +/-2000
-    Serial.print(xInput);Serial.println("\t");
     RotationAngle[i]=RotationAnglePerSecond[i]*deltaTime;//integral RotationAnglePerSecond (transform to RotationAngle from RotationAnglePerSecond)
     totalAngle[i]+=RotationAngle[i];//Add up RotationAngle to totalAngle
   }
@@ -92,12 +93,33 @@ void calibratetozero (){//time is using to limit inplement time of loop in this 
     mpu.getRotation(&GyroOutput[0],&GyroOutput[1],&GyroOutput[2]);//get input of mpu6050
     for(int i=0;i<3;i++){//calculate the output average
       OutputTotal[i]+=GyroOutput[i];//calculate the sum of GyroOutput
-      OutputAverage[i]=OutputTotal[i]/ti;//calculate the average of GyroOutput in some time
+      OutputAverage[i]=OutputTotal[i]/(t+1);//calculate the average of GyroOutput in some time
+      Serial.print(OutputAverage[i]);Serial.print("\t");
+      Serial.print(GyroOutput[i]);Serial.print("\t");
     }
+    Serial.print(t+1);Serial.println("\t");
   }
 
   //set new offset
   mpu.setXGyroOffset(-2*OutputAverage[0]);
   mpu.setYGyroOffset(-2*OutputAverage[1]);
   mpu.setZGyroOffset(-2*OutputAverage[2]);
+}
+
+int32_t PIDcontrol(int32_t fx,int32_t x,int32_t total){//warning:the x need infinitely near 0,which is the using restriction
+  //constant
+  int32_t kp=1;//it using to control the proportion of proportion part
+  int32_t ki=0;//it using to control the proportion of intergal part
+  int32_t kd=0;//it using to control the proportion of differential part
+
+  //proportion
+  int32_t p=kp*fx;
+
+  //intergal
+  int32_t i=ki*total;
+
+  //differential
+  int32_t d=kd*(fx/x);
+
+  return(p+i+d);
 }
