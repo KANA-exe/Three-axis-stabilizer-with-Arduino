@@ -3,8 +3,9 @@
 #include<Servo.h>
 
 //the customize function list
-void calibratetozero ();//using to calibrate gyro to zero
-int32_t PIDcontrol(int32_t fx,int32_t x,int32_t total);
+void calibratetozero (int32_t outputpin);//using to calibrate gyro to zero
+int32_t PIDcontrol(int32_t fx,int32_t x,int32_t total);//using to gave servo motor stable signal
+int32_t outputpin=5;//pin of indicator light
 
 //variable or name for servo and senser 
 MPU6050 mpu;//name MPU6050 mpu
@@ -33,8 +34,8 @@ void setup() {
   Serial.begin(9600);//set baud of Serial Moniter
   mpu.initialize();
   mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);//set gyro detect range to 2000 degrees/sec from 20 degrees/sec
-  //mpu.setZGyroOffset(29);//the function use for calibratiom(value:x=114,y=-77,z=3)
-  calibratetozero();//calibrate mpu6050
+  pinMode(outputpin,OUTPUT);//define pin of indicator light
+  calibratetozero(outputpin);//calibrate mpu6050
 
   //set Servo pin address
   Xservo.attach(servopin[0]);
@@ -53,7 +54,7 @@ void loop() {
   if(totalTime>=detecttime){
     for(int i=0;i<3;i++){
       rotate[i]=90+totalAngle[i]/1000000;//translate unit to second from micro second 
-      rotate[i]=PIDcontrol(rotate[i],deltaTime,totalAngle[i]/1000000);
+      rotate[i]=PIDcontrol(rotate[i],deltaTime,totalAngle[i]/1000000);//
     }
     
     //write the angle
@@ -77,7 +78,7 @@ void loop() {
   timepointBefore=timepoint;//memery the timepoint in this loop
 }
 
-void calibratetozero (){//time is using to limit inplement time of loop in this function,its unit is microsecond
+void calibratetozero (int32_t outputpin){//time is using to limit inplement time of loop in this function,its unit is microsecond
   //set all offset zero
   mpu.setXGyroOffset(0);
   mpu.setYGyroOffset(0);
@@ -104,6 +105,11 @@ void calibratetozero (){//time is using to limit inplement time of loop in this 
   mpu.setXGyroOffset(-2*OutputAverage[0]);
   mpu.setYGyroOffset(-2*OutputAverage[1]);
   mpu.setZGyroOffset(-2*OutputAverage[2]);
+
+  //output signal that mean calibration to zero finished
+  digitalWrite(outputpin,HIGH);
+  delay(3000);
+  digitalWrite(outputpin,LOW);
 }
 
 int32_t PIDcontrol(int32_t fx,int32_t x,int32_t total){//warning:the x need infinitely near 0,which is the using restriction
