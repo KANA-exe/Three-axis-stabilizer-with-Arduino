@@ -3,7 +3,7 @@
 #include<Servo.h>
 
 //the customize function list
-void calibrate-to-zero (int64_t time);//using to calibrate gyro to zero
+void calibratetozero ();//using to calibrate gyro to zero
 
 //variable or name for servo and senser 
 MPU6050 mpu;//name MPU6050 mpu
@@ -33,7 +33,7 @@ void setup() {
   mpu.initialize();
   mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);//set gyro detect range to 2000 degrees/sec from 20 degrees/sec
   //mpu.setZGyroOffset(29);//the function use for calibratiom(value:x=114,y=-77,z=3)
-  calibrate-to-zero(10000);//calibrate mpu6050
+  calibratetozero();//calibrate mpu6050
 
   //set Servo pin address
   Xservo.attach(servopin[0]);
@@ -76,7 +76,7 @@ void loop() {
   timepointBefore=timepoint;//memery the timepoint in this loop
 }
 
-void calibrate-to-zero (int64_t time){//time is using to limit inplement time of loop in this function,its unit is microsecond
+void calibratetozero (){//time is using to limit inplement time of loop in this function,its unit is microsecond
   //set all offset zero
   mpu.setXGyroOffset(0);
   mpu.setYGyroOffset(0);
@@ -85,25 +85,14 @@ void calibrate-to-zero (int64_t time){//time is using to limit inplement time of
   //array about output calculation,definition={x,y,z}
   int16_t GyroOutput[3]={};//save input information from MPU6050
   int32_t OutputTotal[3]={};//calculate the sum of GyroOutput
-  int16_t OutputAverage[3]={};//calculate the average of GyroOutput in some time
-  
-  //value about time and lap of loop
-  int64_t origin=micros();//memer the origintime
-  int32_t times=0;//log the lap of the loop
+  int16_t OutputAverage[3]={};//calculate the average of GyroOutput in some 
 
-  //find the average of output of mpu6050
-  while(1){
-    times++;
+  //find the average of output 
+  for(int t=0;t<75;t++){
     mpu.getRotation(&GyroOutput[0],&GyroOutput[1],&GyroOutput[2]);//get input of mpu6050
     for(int i=0;i<3;i++){//calculate the output average
       OutputTotal[i]+=GyroOutput[i];//calculate the sum of GyroOutput
-      OutputAverage[i]=OutputTotal[i]/times;//calculate the average of GyroOutput in some time
-    }
-
-    int64_t timepoint=micros();//get the time point of the loop that was been implement finish
-    
-    if((timepoint-origin)>=time){//condition of to break the while loop
-      break;
+      OutputAverage[i]=OutputTotal[i]/ti;//calculate the average of GyroOutput in some time
     }
   }
 
