@@ -83,7 +83,7 @@ int32_t PIDcontrol(int32_t fx,int32_t x,int32_t* total){//warning:the x need inf
   int32_t kp=0;//it using to control the proportion of differential part
 
   //proportion
-  int32_t p=kp*fx*x;
+  int32_t p=kp*fx;
 
   //intergal
   total+=fx*x;
