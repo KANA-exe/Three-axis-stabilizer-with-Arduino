@@ -1,6 +1,10 @@
 # About the program
   This program is my technology homework.if you needed,you can use and modify the program,but "do not profit from it".The program has three part:  
+<<<<<<< HEAD
   - ThreeAxisStbilizerDrive,Needed-library and testingcode.ThreeAxisStbilizerDrive is main code,and it is the run in the Arduino board.  
+=======
+  - ThreeAxisStbilizerDrive,Needed-library and testingcode.ThreeAxisStbilizerDrive is main code,and it is run in the Arduino board.  
+>>>>>>> d9e28d602e92ea8419ac7ed8f6d73df1a9a2a437
   - testingcode store the code of not verification ,so if you could not write code or you could not understand,it is recommended not to modify and move the code to ThreeAxisStbilizerDrive.  
   - Needed-library is saving the library that is ThreeAxisStbilizerDrive needed.about those library information,you can see the [library information](https://github.com/KANA-exe/Three-axis-stabilizer-with-Arduino/tree/main?tab=readme-ov-file#Library-information).
 # The program function
